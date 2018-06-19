@@ -28,3 +28,13 @@ for frame in iter_frames(dat, DAVIS240_DVS, 50000)
     ...
 end
 ```
+
+Draw events a film strip:
+```julia
+using Images
+gray(img) = Gray.(0.5 .+ img./max(1,2max(abs.(extrema(img))...)))
+frames = iter_frames(dat, DVS128, 50.0*1000)
+film = film_strip(collect(take(frames, 7)))
+display(gray(film))
+```
+![](film.png)
