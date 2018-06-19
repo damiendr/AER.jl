@@ -108,24 +108,24 @@ end
 
 
 """ Iterates over events of class `C`, grouped into frames of duration `period` (typ. us) """
-function iter_frames(dat::AEDATFile, C, period::Number)
+function iter_frames(dat::AEDATFile, C, period::Integer)
     out = Channel{Vector{AEDATEvent{C}}}(0)
     @schedule iter_frames(dat, C, period, out)
     out
 end
 
-function iter_frames(dat::AEDATFile, C, period::Number, out::Channel)
+function iter_frames(dat::AEDATFile, C, period::Integer, out::Channel)
     frame = AEDATEvent{C}[]
     t0 = -1
     while !eof(dat.io)
         raw = read_event(dat)
         if t0 == -1
-            t0 = raw.timestamp
+            t0 = Int(raw.timestamp)
         end
         while (raw.timestamp - t0) >= period
             put!(out, frame)
             frame = AEDATEvent{C}[]
-            t0 += period
+            t0 += Int(period)
         end
         if isevent(C, raw)
             event = convert(AEDATEvent{C}, raw)
