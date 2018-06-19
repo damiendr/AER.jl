@@ -79,6 +79,7 @@ end
 raw_event_type(dat::AEDATFile{1,0}) = AEDATEvent{UInt16}
 raw_event_type(dat::AEDATFile{2,0}) = AEDATEvent{UInt32}
 
+isevent(::Type, e::AEDATEvent) = false
 isevent(::Type{T}, e::AEDATEvent{T}) where {T} = true
 
 

@@ -17,7 +17,11 @@ function Base.convert(::Type{DVS128}, a::Union{UInt16,UInt32})
     DVS128(pol, x, y, ext)
 end
 
-isevent(::Type{DVS128}, a::AEDATEvent) = true
+# There's no positive way to identify a DVS128 event.
+# These are normally not mixed with other event types
+# anyways. They can be found in 1.0 and 2.0 files.
+isevent(::Type{DVS128}, a::AEDATEvent{UInt16}) = true
+isevent(::Type{DVS128}, a::AEDATEvent{UInt32}) = true
 
 """ Draw events at their location on a 2D canvas """
 function draw_events(events::Vector{<:AEDATEvent{DVS128}})
