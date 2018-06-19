@@ -32,7 +32,7 @@ end
 Draw events as a film strip ([dataset](https://sourceforge.net/p/jaer/wiki/AER%20data/)):
 ```julia
 using Images
-gray(img) = Gray.(0.5 .+ img./max(1,2max(abs.(extrema(img))...)))
+gray(img) = Gray.(0.5 .+ img./max(1,2maximum(abs.(extrema(img)))))
 frames = iter_frames(dat, DVS128, 50*1000)
 film = film_strip(collect(take(frames, 7)))
 display(gray(film))
