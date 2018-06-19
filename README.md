@@ -29,7 +29,7 @@ for frame in iter_frames(dat, DAVIS240_DVS, 50000)
 end
 ```
 
-Draw events a film strip:
+Draw events as a film strip ([dataset](https://sourceforge.net/p/jaer/wiki/AER%20data/)):
 ```julia
 using Images
 gray(img) = Gray.(0.5 .+ img./max(1,2max(abs.(extrema(img))...)))
