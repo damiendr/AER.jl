@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/damiendr/AddressEvent.jl.svg?branch=master)](https://travis-ci.org/damiendr/AddressEvent.jl) [![codecov.io](http://codecov.io/github/damiendr/AddressEvent.jl/coverage.svg?branch=master)](http://codecov.io/github/damiendr/AddressEvent.jl?branch=master)
 
-An unofficial Julia library to read Address-Event Representation DAT files (1.0 and 2.0): https://inivation.com/support/software/fileformat/
+An unofficial Julia library to read files produced by event-based sensors like the DVS128 and DAVIS240 cameras:
+- AER-DAT files (1.0 and 2.0): https://inivation.com/support/software/fileformat/
+- DVS events stored in ROS bags: https://github.com/uzh-rpg/rpg_dvs_ros
 
 ## Example
 
@@ -59,6 +61,6 @@ display(gray(film))
 ![](film.png)
 
 Export an MP4 video (50 ms frames):
-```
+```julia
 export_video("video.mp4", events, 50000, imsize)
 ```
