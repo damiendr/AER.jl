@@ -4,7 +4,7 @@
 
 An unofficial Julia library to read files produced by event-based sensors like the DVS128 and DAVIS240 cameras:
 - AER-DAT files (1.0 and 2.0): https://inivation.com/support/software/fileformat/
-- DVS events stored in ROS bags: https://github.com/uzh-rpg/rpg_dvs_ros
+- DVS events stored in ROS bags: https://github.com/uzh-rpg/rpg_dvs_ros (requires [RobotOSData](https://github.com/damiendr/RobotOSData.jl))
 
 ## Example
 
@@ -25,6 +25,7 @@ read_events(dat, DAVIS240_DVS)
 
 Extract DVS events from a ROS bag:
 ```julia
+using RobotOSData
 using AddressEvent.ROSDVS
 events = open("recorded.bag") do io
     imsize = (0,0)
@@ -47,7 +48,7 @@ end
 
 Draw some events as a single frame:
 ```julia
-    draw_events(events[1:20000], imsize);
+draw_events(events[1:20000], imsize);
 ```
 
 Draw events as a film strip ([dataset](https://sourceforge.net/p/jaer/wiki/AER%20data/)):
