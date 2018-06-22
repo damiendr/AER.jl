@@ -1,5 +1,7 @@
 # Support for the DVS128 camera.
 
+const DVS128_SIZE = (128,128)
+
 """ Event class for the DVS128 """
 struct DVS128
     pol::Bool
@@ -17,27 +19,15 @@ function Base.convert(::Type{DVS128}, a::Union{UInt16,UInt32})
     DVS128(pol, x, y, ext)
 end
 
+event_coord(e::DVS128) = (e.x, e.y)
+event_pol(e::DVS128) = e.pol
+event_location(e::DVS128, imsize) = (DVS128_SIZE[1]-e.y, e.x+1)
+
+image_size(e::Type{DVS128}) = DVS128_SIZE
+
 # There's no positive way to identify a DVS128 event.
 # These are normally not mixed with other event types
 # anyways. They can be found in 1.0 and 2.0 files.
-isevent(::Type{DVS128}, a::AEDATEvent{UInt16}) = true
-isevent(::Type{DVS128}, a::AEDATEvent{UInt32}) = true
+isevent(::Type{DVS128}, a::Event{UInt16}) = true
+isevent(::Type{DVS128}, a::Event{UInt32}) = true
 
-""" Draw events at their location on a 2D canvas """
-function draw_events(events::Vector{<:AEDATEvent{DVS128}})
-    canvas = zeros(128,128)
-    for e in events
-        i = 128 - e.address.y
-        j = e.address.x+1
-        canvas[i,j] += e.address.pol ? 1 : -1
-    end
-    canvas
-end
-
-""" Returns the (times,locations,polarities) of the supplied events. """
-function spike_locs(events::Vector{<:AEDATEvent{DVS128}})
-    ts = collect(e.timestamp for e in events)
-    id = collect(e.address.y * 128 + e.address.x for e in events)
-    pol = collect(e.address.pol for e in events)
-    ts, id, pol
-end

@@ -1,5 +1,9 @@
 # Support for the DAVIS240 camera.
+# DAVIS240 has three different event types.
 
+const DAVIS240_SIZE = (180,240)
+
+""" DVS event (from event-based sensor) """
 struct DAVIS240_DVS
     y::Int16
     x::Int16
@@ -7,6 +11,7 @@ struct DAVIS240_DVS
     pol::Bool
 end
 
+""" APS packet (from frame-based sensor) """
 struct DAVIS240_APS
     y::Int16
     x::Int16
@@ -14,6 +19,7 @@ struct DAVIS240_APS
     sample::Int16
 end
 
+""" IMU packet """
 struct DAVIS240_IMU
     channel::Int8
     sample::Int8
@@ -21,13 +27,22 @@ end
 
 DAVIS240_Any = Union{DAVIS240_DVS, DAVIS240_APS, DAVIS240_IMU}
 
+""" Extracts the event subtype: DVS, APS or IMU """
 event_subtype(data::UInt32) = if ((data >> 31) & 0x1 == 0) DAVIS240_DVS
     elseif ((data >> 10) & 0x03) == 0x03 DAVIS240_IMU
     else DAVIS240_APS
 end
 
-isevent(T::Type{<:DAVIS240_Any}, e::AEDATEvent{UInt32}) =
+# Events can be interpreted as a specific class
+# if they have the corresponding subtype:
+isevent(T::Type{<:DAVIS240_Any}, e::Event{UInt32}) =
     event_subtype(e.address) === T
+
+event_pol(e::DAVIS240_DVS) = e.pol
+event_coord(e::Union{DAVIS240_DVS,DAVIS240_APS}) = (e.x, e.y)
+event_location(e::Union{DAVIS240_DVS,DAVIS240_APS}, imsize) = (DAVIS240_SIZE[1]-e.y, e.x+1)
+
+image_size(e::Type{<:Union{DAVIS240_DVS,DAVIS240_APS}}) = DAVIS240_SIZE
 
 function Base.convert(::Type{DAVIS240_DVS}, a::UInt32)
     y = (a >> 22) & 0x01FF
@@ -51,21 +66,3 @@ function Base.convert(::Type{DAVIS240_IMU}, a::UInt32)
     DAVIS240_IMU(channel, sample)
 end
 
-""" Draw events at their location on a 2D canvas """
-function draw_events(events::Vector{<:AEDATEvent{DAVIS240_DVS}})
-    canvas = zeros(180,240)
-    for e in events
-        i = 180 - e.address.y
-        j = e.address.x+1
-        canvas[i,j] += e.address.pol ? 1 : -1
-    end
-    canvas
-end
-
-""" Returns the (times,locations,polarities) of the supplied events. """
-function spike_locs(events::Vector{<:AEDATEvent{DAVIS240_DVS}})
-    ts = collect(e.timestamp for e in events)
-    id = collect(e.address.y * 240 + e.address.x for e in events)
-    pol = collect(e.address.pol for e in events)
-    ts, id, pol
-end
