@@ -10,6 +10,7 @@ An unofficial Julia library to read files produced by event-based sensors like t
 
 Read DVS128 events from an AER-DAT file:
 ```julia
+using AddressEvent
 using AddressEvent.AERDAT
 events = open("recorded.aerdat") do io
     dat = AERDAT(io)
