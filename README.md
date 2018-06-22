@@ -31,8 +31,8 @@ using AddressEvent.ROSDVS
 events = open("recorded.bag") do io
     imsize = (0,0)
     events = DVSEvent[]
-    sub = Subscription("/davis/right/events") do io
-        imsize = read_events!(io, events)
+    sub = Subscription("/davis/right/events") do msgio
+        imsize = read_events!(msgio, events)
     end
     bag = Bag(io)
     read_topics(bag, sub)
